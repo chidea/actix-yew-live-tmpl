@@ -1,0 +1,1 @@
+openssl req -x509 -out cert.pem -keyout key.pem -newkey rsa:2048 -days 36500 -nodes -sha256 -subj "/CN=$1" -extensions EXT -config <( printf "[dn]\nCN=$1\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:$1\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
