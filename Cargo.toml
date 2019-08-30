@@ -1,0 +1,53 @@
+# [workspace]
+# members = [
+#   "server",
+#   "client",
+# ]
+
+[package]
+name = "VIS"
+version = "0.1.0"
+authors = ["chidea"]
+edition = "2018"
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
+
+[dependencies]
+actix = "0"
+# actix-server = { version = "0", features=["rust-tls", "ssl"] }
+rustls = {version = "0", features = ["dangerous_configuration"]}
+actix-service = "0"
+actix-http = { version = "0", features = ["rust-tls"] }
+actix-web = { version = "1", features = [ "rust-tls", "secure-cookies" ] }
+actix-web-actors = "1"
+actix-rt = "0"
+# actix-connect = { version = "0", features = ["rust-tls", "ssl"] }
+actix-codec = "0"
+actix-redis = "0"
+actix-files= "0"
+openssl = "0"
+env_logger = "0"
+futures = "0"
+log = "0"
+webpki = "0"
+webpki-roots = "0"
+structopt = "0"
+listenfd = "0"
+bytes = "0"
+redis-async = "0.4.5"
+serde = "1"
+serde_derive = "1"
+serde_json = "1"
+# tokio-rustls = "0"
+# tokio-tcp = "0"
+# tokio-io = "0"
+askama = "0"
+rand = "0"
+awc = { version = "0", features = ["rust-tls"] }
+lazy_static = "1"
