@@ -1,4 +1,4 @@
-use futures::Future;
+use futures::{Future, future::AndThen};
 use redis_async::resp::RespValue;
 // use std::{
 // io, sync::Arc,
@@ -29,21 +29,43 @@ struct DBMessage<'a> {
 pub fn db_route(
     redis: Data<Addr<RedisActor>>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    redis
-        .send(Command(resp_array!["GET", "mydomain:one"]))
-        .map_err(AWError::from)
-        .and_then(|res: Result<RespValue, ARError>| match &res {
-            Ok(RespValue::BulkString(s)) => {
-                Ok(HttpResponse::Ok().json(DBMessage {
-                    message: std::str::from_utf8(s).unwrap(),
-                }))
-                // .body(String::from_utf8(s.to_vec()).unwrap()))
-            }
-            _ => {
-                println!("---->{:?}", res);
-                Ok(HttpResponse::InternalServerError().finish())
-            }
-        })
+  let set = redis.send(Command(resp_array!["SET", "mydomain:one", "dbtest.1"]));
+  let get = redis.send(Command(resp_array!["GET", "mydomain:one"]));
+  
+  set.join(get).map_err(AWError::from).and_then(|r| match &r {
+    (_,g) => match g {
+        Ok(RespValue::BulkString(s)) => {
+          Ok(HttpResponse::Ok().json(DBMessage {
+              message: std::str::from_utf8(s).unwrap(),
+          }))
+        }
+        _ => {
+          // println!("---->{:?}", e);
+          Ok(HttpResponse::InternalServerError().finish())
+        }
+    }
+    // _ => Ok(HttpResponse::InternalServerError().finish())
+  })
+  // match set.map_err(AWError::from).wait().unwrap() {
+  //   Ok(_) => {
+  //     get.map_err(AWError::from)
+  //       .and_then(|res: Result<RespValue, ARError>| match &res {
+  //           Ok(RespValue::BulkString(s)) => {
+  //               Ok(HttpResponse::Ok().json(DBMessage {
+  //                   message: std::str::from_utf8(s).unwrap(),
+  //               }))
+  //               // .body(String::from_utf8(s.to_vec()).unwrap()))
+  //           }
+  //           _ => {
+                
+  //           }
+  //       })
+  //   }
+  //   _ => {
+  //   }
+  // }
+  
+  
     // redis
     //   .send(Command(resp_array![
     //     "SET",

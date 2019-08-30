@@ -116,6 +116,7 @@ pub struct Opt {
     #[structopt(short = "p", long = "proto")]
     flag_proto: Vec<String>,
 
+    /// Redis DB connection url.
     #[structopt(short = "d", default_value = "localhost:6379")]
     db: String,
 }
@@ -152,22 +153,18 @@ fn main() -> io::Result<()> {
     let wsserver = WsServer::default().start();
 
     let server = HttpServer::new(move || {
-        App::new()
-            .data(wsserver.clone())
-            .data(RedisActor::start(db.clone()))
-            .wrap(RedisSession::new(db.clone(), &[0; 32]))
-            .wrap(middleware::Logger::default())
-            // .wrap_fn(|req, srv|
-            //     srv.call(req).map(|mut res| {
-            //       logger(res).wait()
-            //     }))
-            .service(web::resource("/db").route(web::get().to_async(db_route)))
-            .service(web::resource("/ws").to(ws_route))
-            .default_service(
-                Files::new("/", "static")
-                    .index_file("index.html")
-                    .default_handler(web::to(|| HttpResponse::NotFound().body("File not found"))),
-            )
+        App::new().data(RedisActor::start(db.clone()))
+          .wrap(RedisSession::new(db.clone(), &[0; 32]))
+          .service(web::resource("/db").route(web::get().to_async(db_route)))
+          .data(wsserver.clone())
+          .wrap(middleware::Logger::default())
+          .service(web::resource("/ws").to(ws_route))
+          .service(web::resource("/ws").to(ws_route))
+          .default_service(
+              Files::new("/", "static")
+                  .index_file("index.html")
+                  .default_handler(web::to(|| HttpResponse::NotFound().body("File not found"))),
+          )
     });
 
     // let onserv = move || {
