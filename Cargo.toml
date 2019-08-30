@@ -5,7 +5,7 @@
 # ]
 
 [package]
-name = "VIS"
+name = "actix-yew-live-tmpl"
 version = "0.1.0"
 authors = ["chidea"]
 edition = "2018"
