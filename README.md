@@ -1,6 +1,7 @@
 # actix-yew-live-tmpl
-Hot reloading local developing server template based on Actix and Yew with Redis and Rustls.
+Hot reloading local developing server template based on [Actix](https://actix.rs) and [Yew](https://github.com/yewstack/yew) with [Redis](https://redis.io/) and [Rustls](https://github.com/ctz/rustls).
 Naturally, it's an wasm frontend on a TLS activated HTTPS web server.
+Temped to be a kickstarting point for various web project requiring bleeding-edge level of technologies.
 
 ### Prerequisites
 - npm
