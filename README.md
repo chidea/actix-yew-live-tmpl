@@ -30,7 +30,7 @@ cd ..
 ```
 
 ### How to start hot-loading
-After initializing, open 2 terminals and start hotrun.sh scripts in each front/back end directories.
+After initializing, open 2 terminals and start `hotrun.sh` scripts in each front/back end directories.
 Redis server (`redis-server`) must be running before.
 
 ```
