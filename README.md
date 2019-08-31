@@ -10,6 +10,9 @@ Temped to be a kickstarting point for various web project requiring bleeding-edg
   - [wasm-pack-npm](https://www.npmjs.com/package/wasm-pack-npm)
     - Installs [wasm-pack](https://www.npmjs.com/package/wasm-pack-npm) and wasm32-unknown-unknown target
     - `sudo npm i -g wasm-pack-npm`
+- [cargo-watch](https://crates.io/crates/cargo-watch)
+  - Watch for source code changes
+  - `cargo install cargo-watch`
 - [cargo-web](https://crates.io/crates/cargo-web)
   - Required to compile yew for Actix.
   - `cargo install cargo-web`
