@@ -24,6 +24,8 @@ cargo generate --git https://github.com/chidea/actix-yew-live-tmpl.git
 # give project name
 cd <project name>/yew
 npm i
+cd ..
+./client.sh # builds actix websocket client in release mode
 ```
 
 ### How to start hot-loading
