@@ -64,7 +64,7 @@ mod ws;
 use ws::HEARTBEAT_INTERVAL;
 
 #[derive(StructOpt, Debug, Clone)]
-/// VIS Server
+/// Generalized WebSocket Client
 pub struct Opt {
     /// Address to connect
     #[structopt(short = "u", default_value = "https://localhost:443/ws")]

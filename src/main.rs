@@ -76,7 +76,7 @@ use ws::ws_route;
 // use tokio_tcp::{TcpStream};
 
 #[derive(StructOpt, Debug, Clone)]
-/// VIS Server
+/// Actix-Yew-live-tmpl webserver launcher
 pub struct Opt {
     /// Debug actix-net
     #[structopt(short = "v")]
