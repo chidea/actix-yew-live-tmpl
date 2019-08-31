@@ -70,3 +70,6 @@ USAGE:
                  send multiple messages. [default: ]
  -u <url>        Address to connect [default: https://localhost:443/ws]
 ```
+
+### Self-signed SSL certificate for 100 years
+You can generate new self-signed SSL certificate with `./ssc.sh localhost` 
