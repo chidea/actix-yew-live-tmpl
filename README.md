@@ -50,7 +50,22 @@ Now, whenever you edit front/back end codes, newly compiled version of the stack
 Go to `https://localhost:8443/db`
 
 ### Limitation
-Currently, when there is some compile error on front-end (Yew) side, it may break hot-loading thus it may be required to press F5 manually after fixing it.
+- When there are some compile error on front-end (Yew) side, it may break hot-loading thus it may be required to press F5 manually after fixing it.
+- WebSocket client is bypassing server ssl checking.
 
 ### Potential upgrades
 - Static template engine with [askama](https://crates.io/crates/askama)
+
+### Generalized Websocket Client
+Attached bin named `client` is a generalized websocket client.
+It is currently not checking server side TLS certificate but in this way, it supports https(wss) connection.
+```
+$ target/release/client -h
+actix-yew-live-tmpl 0.1.0
+Generalized WebSocket Client
+
+USAGE:
+ -m <msg>        Message to send. Set it to '-' to read stdin to send, leave it blank to use stdin as console loop to
+                 send multiple messages. [default: ]
+ -u <url>        Address to connect [default: https://localhost:443/ws]
+```
