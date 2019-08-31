@@ -6,15 +6,16 @@ Temped to be a kickstarting point for various web project requiring bleeding-edg
 ### Prerequisites
 - npm
   - but the stack does not run on nodejs. It is replaced with Actix instead.
-- [wasm-pack-npm](https://www.npmjs.com/package/wasm-pack-npm)
-  - Installs [wasm-pack](https://www.npmjs.com/package/wasm-pack-npm) and wasm32-unknown-unknown target
-  - `sudo npm i -g wasm-pack-npm`
+  - [wasm-pack-npm](https://www.npmjs.com/package/wasm-pack-npm)
+    - Installs [wasm-pack](https://www.npmjs.com/package/wasm-pack-npm) and wasm32-unknown-unknown target
+    - `sudo npm i -g wasm-pack-npm`
 - [cargo-web](https://crates.io/crates/cargo-web)
   - Required to compile yew for Actix.
   - `cargo install cargo-web`
 - [cargo-generate](https://crates.io/crates/cargo-generate)
   - Clones this repository and rename it as your wanted project name.
   - `cargo install cargo-generate`
+  - Requires openssl, pkg-config
 - [redis](https://redis.io)
   - DB
 
