@@ -10,6 +10,9 @@ Temped to be a kickstarting point for various web project requiring bleeding-edg
   - [wasm-pack-npm](https://www.npmjs.com/package/wasm-pack-npm)
     - Installs [wasm-pack](https://www.npmjs.com/package/wasm-pack-npm) and wasm32-unknown-unknown target
     - `sudo npm i -g wasm-pack-npm`
+- [systemfd](https://crates.io/crates/systemfd)
+  - Supports hot swapping on opened sockets
+  - `cargo install systemfd`
 - [cargo-watch](https://crates.io/crates/cargo-watch)
   - Watch for source code changes
   - `cargo install cargo-watch`
