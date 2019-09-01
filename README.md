@@ -1,4 +1,4 @@
-# YATRAL (Yew on Actix with Tls, Redis And Live-loading)
+# YARRL (Yew on Actix with Rustls, Redis And Live-loading)
 ## actix-yew-live-tmpl
 Hot reloading local developing server template based on [Actix](https://actix.rs) and [Yew](https://github.com/yewstack/yew) with [Redis](https://redis.io/) and [Rustls](https://github.com/ctz/rustls).
 Naturally, it's an wasm frontend on a TLS activated HTTPS and HTTP/2 web server.
