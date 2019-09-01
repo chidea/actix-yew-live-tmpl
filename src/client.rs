@@ -58,10 +58,11 @@ use structopt::StructOpt;
 
 // mod codec;
 
-mod server;
-mod ws;
+// mod server;
+// mod ws;
 // mod util;
-use ws::HEARTBEAT_INTERVAL;
+mod ws_var;
+use ws_var::HEARTBEAT_INTERVAL;
 
 #[derive(StructOpt, Debug, Clone)]
 /// Generalized WebSocket Client

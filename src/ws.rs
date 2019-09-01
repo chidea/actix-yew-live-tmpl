@@ -1,23 +1,23 @@
 use actix::prelude::*;
 
 // use actix_files as fs;
-use actix_web::{web, /* App, */ Error, HttpRequest, HttpResponse /* HttpServer */};
+use actix_redis::RedisActor;
+use actix_web::{web::{Data, Payload}, /* App, */ Error, HttpRequest, HttpResponse /* HttpServer */};
 use actix_web_actors::ws::{self, start, Message, ProtocolError};
 use std::time::{Duration, Instant};
 // use std::sync::{Mutex, Arc};
 
-use super::server;
-
-/// How often heartbeat pings are sent
-pub const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
-/// How long before lack of client response causes a timeout
-pub const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
+use crate::{
+  server::{WsServer, Connect, Disconnect, CloseAll},
+  ws_var::{HEARTBEAT_INTERVAL, CLIENT_TIMEOUT}
+};
 
 /// Entry point for our route
 pub fn ws_route(
     req: HttpRequest,
-    stream: web::Payload,
-    srv: web::Data<Addr<server::WsServer>>,
+    stream: Payload,
+    srv: Data<Addr<WsServer>>,
+    db: Data
 ) -> Result<HttpResponse, Error> {
     println!("new websocket requested from {}", req.peer_addr().unwrap());
     start(
@@ -44,7 +44,8 @@ pub struct WsSession {
     // /// peer name
     // name: Option<String>,
     // /// Chat server
-    addr: Addr<server::WsServer>,
+    addr: Addr<WsServer>,
+    db: Addr<RedisActor>,
 }
 
 impl Actor for WsSession {
@@ -57,30 +58,30 @@ impl Actor for WsSession {
         self.hb(ctx);
         let addr = ctx.address();
         // println!("new websocket connected");
-
-        // println!("new websocket connected {:?}", addr.recipient().to_string());
-        // register self in chat server. `AsyncContext::wait` register
-        // future within context, but context waits until this future resolves
-        // before processing any other events.
-        // HttpContext::state() is instance of WsChatSessionState, state is shared
-        // across all routes within application
-        // let addr = ctx.address();
-        self.addr.do_send(server::Connect { addr }); //.into_actor(self).then(|_r, _a, _c|  ok(()) ).wait(ctx);
-                                                     //   .into_actor(self)
-                                                     //   .then(|res, act, ctx| {
-                                                     //     match res {
-                                                     //       Ok(res) => act.id = res,
-                                                     //       // something is wrong with chat server
-                                                     //       _ => ctx.stop(),
-                                                     //     }
-                                                     //     ok(())
-                                                     //   })
-                                                     //   .wait(ctx);
+        self.addr.do_send(Connect { addr }); 
+        
+        // // synchronous style
+        // // register self in chat server. `AsyncContext::wait` register
+        // // future within context, but context waits until this future resolves
+        // // before processing any other events.
+        // // HttpContext::state() is instance of WsChatSessionState, state is shared
+        // // across all routes within application
+        //self.addr.send(Connect {addr}).into_actor(self).then(|_r, _a, _c|  ok(()) ).wait(ctx);
+        //   .into_actor(self)
+        //   .then(|res, act, ctx| {
+        //     match res {
+        //       Ok(res) => act.id = res,
+        //       // something is wrong with chat server
+        //       _ => ctx.stop(),
+        //     }
+        //     ok(())
+        //   })
+        //   .wait(ctx);
     }
 
     fn stopping(&mut self, ctx: &mut Self::Context) -> Running {
         // notify chat server
-        self.addr.do_send(server::Disconnect {
+        self.addr.do_send(Disconnect {
             addr: ctx.address(),
         });
         Running::Stop
@@ -122,7 +123,7 @@ impl StreamHandler<Message, ProtocolError> for WsSession {
                 println!("text received : {}", text);
                 if text == "restart_all" {
                     println!("restart all websockets!");
-                    self.addr.do_send(server::CloseAll);
+                    self.addr.do_send(CloseAll);
                     ctx.stop();
                 }
             }
