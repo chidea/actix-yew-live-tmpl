@@ -1,7 +1,6 @@
 use actix::prelude::*;
 
 // use actix_files as fs;
-use actix_redis::RedisActor;
 use actix_web::{web::{Data, Payload}, /* App, */ Error, HttpRequest, HttpResponse /* HttpServer */};
 use actix_web_actors::ws::{self, start, Message, ProtocolError};
 use std::time::{Duration, Instant};
@@ -17,7 +16,6 @@ pub fn ws_route(
     req: HttpRequest,
     stream: Payload,
     srv: Data<Addr<WsServer>>,
-    db: Data
 ) -> Result<HttpResponse, Error> {
     println!("new websocket requested from {}", req.peer_addr().unwrap());
     start(
@@ -45,7 +43,6 @@ pub struct WsSession {
     // name: Option<String>,
     // /// Chat server
     addr: Addr<WsServer>,
-    db: Addr<RedisActor>,
 }
 
 impl Actor for WsSession {
@@ -88,14 +85,6 @@ impl Actor for WsSession {
     }
 }
 
-// /// Handle messages from chat server, we simply send it to peer websocket
-// impl Handler<session::Message> for WsChatSession {
-//   type Result = ();
-
-//   fn handle(&mut self, msg: session::Message, ctx: &mut Self::Context) {
-//     ctx.text(msg.0);
-//   }
-// }
 #[derive(Message)]
 pub struct Close;
 impl Handler<Close> for WsSession {
@@ -213,7 +202,7 @@ impl WsSession {
                 println!("Websocket Client heartbeat failed, disconnecting!");
 
                 // notify chat server
-                act.addr.do_send(server::Disconnect {
+                act.addr.do_send(Disconnect {
                     addr: ctx.address(),
                 });
 

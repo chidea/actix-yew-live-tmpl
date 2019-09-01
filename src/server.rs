@@ -43,7 +43,8 @@ use actix::prelude::*;
 // };
 // use actix_web_actors::ws::{Message as WsMessage, CloseCode, CloseReason };
 // use askama::Template;
-// use actix_redis::{Command, RedisActor, Error as ARError};
+//use actix_redis::{Command, RedisActor, Error as ARError};
+use actix_redis::{RedisActor};
 // use redis_async::{
 // client::{PairedConnection, paired_connect, PubsubConnection, pubsub_connect},
 // resp::{RespValue},
@@ -238,17 +239,16 @@ use crate::ws::{Close as WsClose, WsSession};
 // }
 
 pub struct WsServer {
-    // sessions : Mutex<Vec<Addr<WsSession>>>,
     sessions: Vec<Addr<WsSession>>,
+    db: Addr<RedisActor>,
 }
 impl Actor for WsServer {
     type Context = Context<Self>;
 }
-impl Default for WsServer {
-    fn default() -> WsServer {
-        // let sessions = Mutex::new(vec![]);
+impl WsServer {
+    pub fn new(db : Addr<RedisActor>) -> WsServer {
         let sessions = vec![];
-        WsServer { sessions }
+        WsServer { sessions, db }
     }
 }
 

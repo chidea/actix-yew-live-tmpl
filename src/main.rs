@@ -34,6 +34,7 @@ mod tls;
 // mod model;
 mod db;
 mod ws;
+mod ws_var;
 // mod codec;
 // mod session;
 
@@ -149,16 +150,15 @@ fn main() -> io::Result<()> {
 
     // let tcpserver = ws::WsServer::default().start();
     // Arbiter::new().exec(move || { session::TcpServer::new(setport(addr, opt.tcpport)); Ok::<_, ()>(())});
-    // tcpserver.
-    let wsserver = WsServer::default().start();
-
+    let redis = RedisActor::start(db.clone());
+    let wsserver = WsServer::new(redis.clone()).start();
     let server = HttpServer::new(move || {
-        App::new().data(RedisActor::start(db.clone()))
+        App::new()
+          .wrap(middleware::Logger::default())
           .wrap(RedisSession::new(db.clone(), &[0; 32]))
+          .data(redis.clone())
           .service(web::resource("/db").route(web::get().to_async(db_route)))
           .data(wsserver.clone())
-          .wrap(middleware::Logger::default())
-          .service(web::resource("/ws").to(ws_route))
           .service(web::resource("/ws").to(ws_route))
           .default_service(
               Files::new("/", "static")
@@ -167,56 +167,7 @@ fn main() -> io::Result<()> {
           )
     });
 
-    // let onserv = move || {
-    //   HttpService::new(
-    //     App::new()
-    //       .data(RedisActor::start(db.clone()))
-    //       .wrap(middleware::Logger::default())
-    //       .wrap(RedisSession::new(db.clone(), &[0;32]))
-    //       .default_service(
-    //         web::resource("/")
-    //           .route(web::get().to_async(root_handler))
-    //       )
-    //   )
-    //   // HttpService::new(AppFactory)
-    //   // HttpService::build()
-    //     // .keep_alive(0)
-    //     // .h1(AppFactory)
-    //   // let num = num.clone();
-    //   // let acceptor = acceptor.clone();
-
-    //   // HttpService::build()
-    //     // .keep_alive(0)
-    //     // .upgrade(WSFactory)
-    //     // .finish(|_req:Request|
-    //     //   _req
-    //     //     .map_err(|e| println!("Openssl error: {}", e))
-    //     //     .and_then(move |_| {
-    //     //       let num = num.fetch_add(1, Ordering::Relaxed);
-    //     //       println!("got ssl connection {:?}", num);
-    //     //       future::ok(())
-    //     //     })
-    //     //     .and_then(logger)
-    //     // )
-    //     // .h2(AppFactory)
-    //   // // service for converting incoming TcpStream to a SslStream<TcpStream>
-    //   // service_fn(move |stream: Io<TcpStream>| {
-
-    //   //   // SslAcceptorExt::accept_async(&acceptor, stream.into_parts().0)
-    //   //   //   .map_err(|e| println!("Openssl error: {}", e))
-    //   // })
-    //   // // .and_then() combinator uses other service to convert incoming `Request` to a
-    //   // // `Response` and then uses that response as an input for next
-    //   // // service. in this case, on success we use `logger` service
-    //   // .and_then(logger)
-    //   // // Next service counts number of connections
-    //   // .and_then(move |_| {
-    //   //     let num = num.fetch_add(1, Ordering::Relaxed);
-    //   //     println!("got ssl connection {:?}", num);
-    //   //     future::ok(())
-    //   // })
-    // };
-    let addr = opt.addr.clone(); //.to_socket_addrs().expect("address is not in right format nor resolvable").next().unwrap();
+    let addr = opt.addr.clone();
     let raddr: String = setport(&addr, opt.rport);
     {
         let s: &'static str = Box::leak(addr.into_boxed_str());
